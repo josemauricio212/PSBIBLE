@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>VAULT — Catálogo para Impressão</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #fff;
+    --fg: #111418;
+    --fg-1: #2a3038;
+    --fg-2: #5a6270;
+    --fg-3: #8892a2;
+    --border: #d8dde5;
+    --border-hi: #b9c1cd;
+    --panel: #f5f7fa;
+    --accent: #0b7a6b;
+    --success: #15803d;
+    --warn: #b45309;
+    --danger: #b91c1c;
+    --info: #1d4ed8;
+    --f-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+    --f-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --f-mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  @page { size: A4 portrait; margin: 14mm 12mm; }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--f-body);
+    font-size: 10pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    max-width: 190mm;
+    margin: 0 auto;
+    padding: 0;
+    break-after: page;
+  }
+  .page:last-child { break-after: auto; }
+
+  /* === COVER === */
+  .cover {
+    min-height: 260mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10mm 0;
+  }
+  .cover-top {
+    border-bottom: 2px solid var(--fg);
+    padding-bottom: 8mm;
+  }
+  .cover-kicker {
+    font-family: var(--f-mono);
+    font-size: 9pt;
+    letter-spacing: 3pt;
+    color: var(--fg-2);
+    margin-bottom: 6mm;
+  }
+  .cover h1 {
+    font-family: var(--f-display);
+    font-size: 48pt;
+    font-weight: 700;
+    letter-spacing: -1.5pt;
+    line-height: 0.95;
+    margin: 0 0 4mm;
+  }
+  .cover h2 {
+    font-family: var(--f-display);
+    font-size: 20pt;
+    font-weight: 400;
+    color: var(--fg-2);
+    margin: 0;
+    letter-spacing: -.3pt;
+  }
+
+  .cover-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6mm;
+    margin: 10mm 0;
+  }
+  .cs-item {
+    padding: 8mm 6mm;
+    background: var(--panel);
+    border-left: 3px solid var(--accent);
+  }
+  .cs-num {
+    font-family: var(--f-display);
+    font-size: 36pt;
+    font-weight: 700;
+    letter-spacing: -1pt;
+    line-height: 1;
+    color: var(--fg);
+  }
+  .cs-lbl {
+    font-family: var(--f-mono);
+    font-size: 9pt;
+    letter-spacing: 1.5pt;
+    text-transform: uppercase;
+    color: var(--fg-2);
+    margin-top: 4mm;
+  }
+
+  .cover-foot {
+    padding-top: 8mm;
+    border-top: 1px solid var(--border);
+    font-family: var(--f-mono);
+    font-size: 8.5pt;
+    color: var(--fg-3);
+    letter-spacing: .5pt;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* === SECTION HEADERS === */
+  .section-head {
+    margin-bottom: 6mm;
+    padding-bottom: 3mm;
+    border-bottom: 1.5px solid var(--fg);
+  }
+  .sh-kicker {
+    font-family: var(--f-mono);
+    font-size: 8.5pt;
+    letter-spacing: 2pt;
+    color: var(--accent);
+    margin-bottom: 2mm;
+  }
+  .sh-title {
+    font-family: var(--f-display);
+    font-size: 22pt;
+    font-weight: 700;
+    letter-spacing: -.5pt;
+    margin: 0;
+  }
+
+  /* === KPI cards === */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3mm;
+    margin-bottom: 8mm;
+  }
+  .kpi {
+    border: 1px solid var(--border);
+    padding: 5mm 4mm;
+  }
+  .kpi-lbl {
+    font-family: var(--f-mono);
+    font-size: 7.5pt;
+    letter-spacing: 1.5pt;
+    color: var(--fg-2);
+    margin-bottom: 2mm;
+  }
+  .kpi-val {
+    font-family: var(--f-display);
+    font-size: 18pt;
+    font-weight: 700;
+    letter-spacing: -.5pt;
+    color: var(--fg);
+  }
+  .kpi-sub {
+    font-size: 8.5pt;
+    color: var(--fg-2);
+    margin-top: 1mm;
+  }
+
+  /* === TABLES === */
+  table.catalog {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9pt;
+  }
+  .catalog thead {
+    display: table-header-group;
+  }
+  .catalog th {
+    font-family: var(--f-mono);
+    font-size: 7.5pt;
+    letter-spacing: 1.5pt;
+    text-transform: uppercase;
+    color: var(--fg-2);
+    text-align: left;
+    padding: 3mm 2mm;
+    border-bottom: 1.5px solid var(--fg);
+    font-weight: 500;
+    background: var(--panel);
+  }
+  .catalog td {
+    padding: 2.2mm 2mm;
+    border-bottom: 0.5px solid var(--border);
+    vertical-align: middle;
+  }
+  .catalog tr {
+    break-inside: avoid;
+  }
+  .c-idx {
+    font-family: var(--f-mono);
+    font-size: 8pt;
+    color: var(--fg-3);
+    width: 10mm;
+  }
+  .c-title {
+    font-weight: 600;
+    color: var(--fg);
+  }
+  .c-series {
+    color: var(--fg-2);
+    font-size: 8.5pt;
+  }
+  .c-plat, .c-year, .c-hours {
+    font-family: var(--f-mono);
+    font-size: 8.5pt;
+    color: var(--fg-1);
+  }
+  .c-status {
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: .5pt;
+    padding: 1mm 2mm;
+    border-radius: 2mm;
+    display: inline-block;
+    font-weight: 600;
+  }
+  .c-status.jogando    { background: #dcfce7; color: #15803d; }
+  .c-status.zerado     { background: #dbeafe; color: #1d4ed8; }
+  .c-status.biblioteca { background: #f1f5f9; color: #475569; }
+  .c-status.pausado    { background: #fef3c7; color: #b45309; }
+  .c-status.abandonado { background: #fee2e2; color: #b91c1c; }
+  .c-rating {
+    color: var(--accent);
+    letter-spacing: -.5pt;
+    font-size: 9pt;
+  }
+
+  /* Series group */
+  .series-section {
+    break-inside: avoid;
+    margin-bottom: 8mm;
+  }
+  .series-title {
+    font-family: var(--f-display);
+    font-size: 13pt;
+    font-weight: 600;
+    letter-spacing: -.2pt;
+    padding: 2mm 3mm;
+    background: var(--fg);
+    color: var(--bg);
+    margin-bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .series-title .count {
+    font-family: var(--f-mono);
+    font-size: 8.5pt;
+    font-weight: 400;
+    letter-spacing: 1pt;
+    opacity: .7;
+  }
+
+  /* Status counts bar */
+  .status-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2mm;
+    margin-bottom: 8mm;
+  }
+  .sb-item {
+    border: 1px solid var(--border);
+    padding: 3mm 4mm;
+  }
+  .sb-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .sb-dot.jogando { background: #15803d; }
+  .sb-dot.zerado { background: #1d4ed8; }
+  .sb-dot.biblioteca { background: #8892a2; }
+  .sb-dot.pausado { background: #b45309; }
+  .sb-dot.abandonado { background: #b91c1c; }
+  .sb-num {
+    font-family: var(--f-display);
+    font-size: 16pt;
+    font-weight: 700;
+    display: block;
+    margin-top: 1mm;
+  }
+  .sb-lbl {
+    font-family: var(--f-mono);
+    font-size: 8pt;
+    letter-spacing: 1pt;
+    color: var(--fg-2);
+    text-transform: uppercase;
+  }
+
+  /* Finance bars */
+  .hbar-list { display: flex; flex-direction: column; gap: 2mm; margin-top: 4mm; }
+  .hbar {
+    display: grid;
+    grid-template-columns: 45mm 1fr 25mm;
+    align-items: center;
+    gap: 4mm;
+    font-size: 9pt;
+  }
+  .hbar-track {
+    height: 4mm;
+    background: var(--panel);
+    border: 0.5px solid var(--border);
+    position: relative;
+  }
+  .hbar-fill {
+    height: 100%;
+    background: var(--accent);
+  }
+  .hbar-val {
+    font-family: var(--f-mono);
+    font-size: 8.5pt;
+    text-align: right;
+    color: var(--fg);
+  }
+
+  .footer-stamp {
+    margin-top: 10mm;
+    padding-top: 4mm;
+    border-top: 0.5px solid var(--border);
+    font-family: var(--f-mono);
+    font-size: 7.5pt;
+    color: var(--fg-3);
+    letter-spacing: .5pt;
+    text-align: center;
+  }
+
+  .print-hint {
+    position: fixed;
+    top: 10px; right: 10px;
+    background: #111;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-family: var(--f-mono);
+    font-size: 10px;
+    z-index: 99;
+  }
+  @media print {
+    .print-hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-hint">Use Ctrl/Cmd+P para salvar como PDF</div>
+
+<!-- Cover Page -->
+<section class="page cover">
+  <div>
+    <div class="cover-top">
+      <div class="cover-kicker">VAULT · PSBIBLE · CATÁLOGO PESSOAL</div>
+      <h1>Biblioteca<br/>de Jogos</h1>
+      <h2 style="margin-top:4mm">Uso pessoal · organização financeira<br/>sem fins comerciais</h2>
+    </div>
+
+    <div class="cover-stats" id="cover-stats">
+      <!-- preenchido via JS -->
+    </div>
+  </div>
+
+  <div class="cover-foot">
+    <span id="cover-date">—</span>
+    <span>vault / biblioteca pessoal</span>
+  </div>
+</section>
+
+<!-- Overview / Status -->
+<section class="page">
+  <div class="section-head">
+    <div class="sh-kicker">§ 01 · PANORAMA GERAL</div>
+    <h2 class="sh-title">Visão geral da coleção</h2>
+  </div>
+
+  <div class="kpi-grid" id="kpi-grid"></div>
+
+  <h3 style="font-family:var(--f-display); font-size:14pt; margin:6mm 0 3mm;">Distribuição por status</h3>
+  <div class="status-bar" id="status-bar"></div>
+
+  <h3 style="font-family:var(--f-display); font-size:14pt; margin:6mm 0 3mm;">Distribuição por plataforma</h3>
+  <div class="hbar-list" id="platform-bars"></div>
+
+  <h3 style="font-family:var(--f-display); font-size:14pt; margin:6mm 0 3mm;">Top gêneros</h3>
+  <div class="hbar-list" id="genre-bars"></div>
+</section>
+
+<!-- Catálogo por série -->
+<section class="page">
+  <div class="section-head">
+    <div class="sh-kicker">§ 02 · CATÁLOGO POR SÉRIE</div>
+    <h2 class="sh-title">Biblioteca completa</h2>
+  </div>
+  <div id="series-catalog"></div>
+</section>
+
+<!-- Catálogo tabela completa -->
+<section class="page">
+  <div class="section-head">
+    <div class="sh-kicker">§ 03 · LISTA COMPLETA (A–Z)</div>
+    <h2 class="sh-title">Todos os jogos</h2>
+  </div>
+  <table class="catalog">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>TÍTULO</th>
+        <th>SÉRIE</th>
+        <th>GÊNERO</th>
+        <th>PLAT.</th>
+        <th>ANO</th>
+        <th>HORAS</th>
+        <th>NOTA</th>
+        <th>STATUS</th>
+      </tr>
+    </thead>
+    <tbody id="full-table"></tbody>
+  </table>
+</section>
+
+<!-- Financeiro -->
+<section class="page">
+  <div class="section-head">
+    <div class="sh-kicker">§ 04 · FINANCEIRO</div>
+    <h2 class="sh-title">Painel de investimentos</h2>
+  </div>
+  <div id="finance-content"></div>
+  <div class="footer-stamp">
+    ※ Valores informados manualmente pelo usuário. Uso pessoal, sem fins comerciais ou financeiros.
+  </div>
+</section>
+
+<script src="data/games.js"></script>
+<script>
+  const games = window.GAMES_DATA;
+  const fmt = (v) => `R$ ${(+v || 0).toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+  // Cover date
+  document.getElementById("cover-date").textContent =
+    new Date().toLocaleDateString("pt-BR", {day:"2-digit", month:"long", year:"numeric"}).toUpperCase();
+
+  // Cover stats
+  const totalHours = games.reduce((a,g) => a + g.hours, 0);
+  const seriesCount = new Set(games.map(g => g.series)).size;
+  const platCount = new Set(games.map(g => g.platform)).size;
+  const totalPaid = games.reduce((a,g) => a + (+g.pricePaid || 0), 0);
+
+  document.getElementById("cover-stats").innerHTML = `
+    <div class="cs-item"><div class="cs-num">${games.length}</div><div class="cs-lbl">Jogos</div></div>
+    <div class="cs-item"><div class="cs-num">${totalHours.toLocaleString("pt-BR")}</div><div class="cs-lbl">Horas jogadas</div></div>
+    <div class="cs-item"><div class="cs-num">${seriesCount}</div><div class="cs-lbl">Séries / franquias</div></div>
+    <div class="cs-item"><div class="cs-num">${platCount}</div><div class="cs-lbl">Plataformas</div></div>
+  `;
+
+  // KPI grid
+  const byStatus = games.reduce((a,g) => (a[g.status]=(a[g.status]||0)+1, a), {});
+  const avgRating = games.filter(g=>g.rating>0).reduce((a,g)=>a+g.rating,0) / Math.max(1, games.filter(g=>g.rating>0).length);
+  document.getElementById("kpi-grid").innerHTML = `
+    <div class="kpi"><div class="kpi-lbl">TOTAL</div><div class="kpi-val">${games.length}</div><div class="kpi-sub">jogos catalogados</div></div>
+    <div class="kpi"><div class="kpi-lbl">ZERADOS</div><div class="kpi-val">${byStatus.zerado || 0}</div><div class="kpi-sub">${Math.round((byStatus.zerado||0)/games.length*100)}% da coleção</div></div>
+    <div class="kpi"><div class="kpi-lbl">HORAS TOTAIS</div><div class="kpi-val">${totalHours.toLocaleString("pt-BR")}</div><div class="kpi-sub">tempo acumulado</div></div>
+    <div class="kpi"><div class="kpi-lbl">NOTA MÉDIA</div><div class="kpi-val">${avgRating.toFixed(1)}</div><div class="kpi-sub">★ dos avaliados</div></div>
+  `;
+
+  // Status bar
+  const statusLabels = {
+    jogando:"Jogando", zerado:"Zerados",
+    biblioteca:"Biblioteca", pausado:"Pausados", abandonado:"Abandonados"
+  };
+  document.getElementById("status-bar").innerHTML =
+    Object.keys(statusLabels).map(k => `
+      <div class="sb-item">
+        <div class="sb-lbl"><span class="sb-dot ${k}"></span>${statusLabels[k]}</div>
+        <span class="sb-num">${byStatus[k] || 0}</span>
+      </div>
+    `).join("");
+
+  // Platform bars
+  const byPlat = {};
+  games.forEach(g => byPlat[g.platform] = (byPlat[g.platform]||0)+1);
+  const platSorted = Object.entries(byPlat).sort((a,b) => b[1]-a[1]);
+  const maxPlat = Math.max(...platSorted.map(([,v])=>v));
+  document.getElementById("platform-bars").innerHTML = platSorted.map(([p, v]) => `
+    <div class="hbar">
+      <div>${p}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${(v/maxPlat)*100}%"></div></div>
+      <div class="hbar-val">${v} jogos</div>
+    </div>
+  `).join("");
+
+  // Genre bars (top 10)
+  const byGenre = {};
+  games.forEach(g => byGenre[g.genre] = (byGenre[g.genre]||0)+1);
+  const genreSorted = Object.entries(byGenre).sort((a,b) => b[1]-a[1]).slice(0,10);
+  const maxGenre = Math.max(...genreSorted.map(([,v])=>v));
+  document.getElementById("genre-bars").innerHTML = genreSorted.map(([g, v]) => `
+    <div class="hbar">
+      <div>${g}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${(v/maxGenre)*100}%"></div></div>
+      <div class="hbar-val">${v} jogos</div>
+    </div>
+  `).join("");
+
+  // Series catalog
+  const bySeries = {};
+  games.forEach(g => {
+    if (!bySeries[g.series]) bySeries[g.series] = [];
+    bySeries[g.series].push(g);
+  });
+  const seriesList = Object.keys(bySeries).sort((a,b) => bySeries[b].length - bySeries[a].length);
+  document.getElementById("series-catalog").innerHTML = seriesList.map(s => {
+    const items = bySeries[s].sort((a,b) => a.year - b.year);
+    return `
+      <div class="series-section">
+        <div class="series-title">
+          <span>${s}</span>
+          <span class="count">${items.length} ${items.length===1?"jogo":"jogos"} · ${items.reduce((a,g)=>a+g.hours,0)}h</span>
+        </div>
+        <table class="catalog">
+          <tbody>
+            ${items.map(g => `
+              <tr>
+                <td class="c-idx">#${String(g.id).padStart(3,"0")}</td>
+                <td class="c-title">${g.title}</td>
+                <td class="c-plat">${g.platform}</td>
+                <td class="c-year">${g.year}</td>
+                <td class="c-hours">${g.hours}h</td>
+                <td class="c-rating">${g.rating > 0 ? "★".repeat(g.rating) : "—"}</td>
+                <td><span class="c-status ${g.status}">${statusLabels[g.status] || g.status}</span></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }).join("");
+
+  // Full A-Z table
+  const sorted = [...games].sort((a,b) => a.title.localeCompare(b.title));
+  document.getElementById("full-table").innerHTML = sorted.map((g, i) => `
+    <tr>
+      <td class="c-idx">${String(i+1).padStart(3,"0")}</td>
+      <td class="c-title">${g.title}</td>
+      <td class="c-series">${g.series}</td>
+      <td class="c-series">${g.genre}</td>
+      <td class="c-plat">${g.platform}</td>
+      <td class="c-year">${g.year}</td>
+      <td class="c-hours">${g.hours}h</td>
+      <td class="c-rating">${g.rating > 0 ? "★".repeat(g.rating) : "—"}</td>
+      <td><span class="c-status ${g.status}">${statusLabels[g.status] || g.status}</span></td>
+    </tr>
+  `).join("");
+
+  // Finance
+  const withPrice = games.filter(g => +g.pricePaid > 0);
+  const totalFull = games.reduce((a,g) => a + (+g.priceFull || 0), 0);
+  const totalSaved = Math.max(0, totalFull - totalPaid);
+  const costPerHour = totalHours > 0 ? totalPaid / totalHours : 0;
+  const avgPerGame = withPrice.length > 0 ? totalPaid / withPrice.length : 0;
+
+  const byYear = {};
+  games.forEach(g => {
+    if (+g.pricePaid > 0 && g.purchaseYear) {
+      byYear[g.purchaseYear] = (byYear[g.purchaseYear] || 0) + (+g.pricePaid);
+    }
+  });
+  const yearsArr = Object.keys(byYear).sort();
+
+  const topExpensive = [...games].filter(g => +g.pricePaid > 0)
+    .sort((a,b) => b.pricePaid - a.pricePaid).slice(0, 15);
+  const bestValue = [...games].filter(g => +g.pricePaid > 0 && g.hours > 0)
+    .map(g => ({...g, cph: g.pricePaid / g.hours}))
+    .sort((a,b) => a.cph - b.cph).slice(0, 15);
+
+  const financeHTML = `
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-lbl">TOTAL INVESTIDO</div><div class="kpi-val">${fmt(totalPaid)}</div><div class="kpi-sub">${withPrice.length} de ${games.length} com preço</div></div>
+      <div class="kpi"><div class="kpi-lbl">ECONOMIZADO</div><div class="kpi-val" style="color:var(--success)">${fmt(totalSaved)}</div><div class="kpi-sub">${totalFull>0?Math.round((totalSaved/totalFull)*100)+"%":"—"} de desconto</div></div>
+      <div class="kpi"><div class="kpi-lbl">MÉDIA/JOGO</div><div class="kpi-val">${fmt(avgPerGame)}</div><div class="kpi-sub">ticket médio</div></div>
+      <div class="kpi"><div class="kpi-lbl">CUSTO/HORA</div><div class="kpi-val">${fmt(costPerHour)}</div><div class="kpi-sub">${totalHours.toLocaleString("pt-BR")}h totais</div></div>
+    </div>
+
+    ${withPrice.length === 0 ? `
+      <div style="padding:8mm; border:1px dashed var(--border); background:var(--panel); text-align:center; color:var(--fg-2); font-size:10pt;">
+        — Nenhum dado financeiro registrado ainda.<br/>
+        <span style="font-family:var(--f-mono); font-size:8.5pt; letter-spacing:.5pt;">Edite os jogos no app e informe "preço pago" + "ano de compra" para popular este relatório.</span>
+      </div>
+    ` : `
+      ${yearsArr.length > 0 ? `
+        <h3 style="font-family:var(--f-display); font-size:14pt; margin:6mm 0 3mm;">Gastos por ano</h3>
+        <table class="catalog">
+          <thead><tr><th>ANO</th><th># JOGOS</th><th style="text-align:right;">GASTO</th></tr></thead>
+          <tbody>
+            ${yearsArr.slice().reverse().map(y => {
+              const count = games.filter(g => g.purchaseYear === +y && +g.pricePaid > 0).length;
+              return `<tr><td class="c-year">${y}</td><td>${count}</td><td style="text-align:right; font-family:var(--f-mono);">${fmt(byYear[y])}</td></tr>`;
+            }).join("")}
+          </tbody>
+        </table>
+      ` : ""}
+
+      <h3 style="font-family:var(--f-display); font-size:14pt; margin:8mm 0 3mm;">Top mais caros</h3>
+      <table class="catalog">
+        <thead><tr><th>#</th><th>TÍTULO</th><th>SÉRIE</th><th>PLAT.</th><th style="text-align:right;">PREÇO PAGO</th></tr></thead>
+        <tbody>
+          ${topExpensive.map((g,i) => `
+            <tr>
+              <td class="c-idx">${String(i+1).padStart(2,"0")}</td>
+              <td class="c-title">${g.title}</td>
+              <td class="c-series">${g.series}</td>
+              <td class="c-plat">${g.platform}</td>
+              <td style="text-align:right; font-family:var(--f-mono);">${fmt(g.pricePaid)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+
+      <h3 style="font-family:var(--f-display); font-size:14pt; margin:8mm 0 3mm;">Melhor custo/hora</h3>
+      <table class="catalog">
+        <thead><tr><th>#</th><th>TÍTULO</th><th>HORAS</th><th>PAGO</th><th style="text-align:right;">R$/HORA</th></tr></thead>
+        <tbody>
+          ${bestValue.map((g,i) => `
+            <tr>
+              <td class="c-idx">${String(i+1).padStart(2,"0")}</td>
+              <td class="c-title">${g.title}</td>
+              <td class="c-hours">${g.hours}h</td>
+              <td style="font-family:var(--f-mono);">${fmt(g.pricePaid)}</td>
+              <td style="text-align:right; font-family:var(--f-mono);">${fmt(g.cph)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `}
+  `;
+  document.getElementById("finance-content").innerHTML = financeHTML;
+
+  // Auto-print after fonts + data ready
+  Promise.all([
+    document.fonts ? document.fonts.ready : Promise.resolve(),
+    new Promise(r => setTimeout(r, 500))
+  ]).then(() => window.print());
+</script>
+
+</body>
+</html>
