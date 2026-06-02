@@ -1,0 +1,47 @@
+{
+  "name": "vault-game-library",
+  "version": "1.0.0",
+  "description": "VAULT — Biblioteca Pessoal de Jogos",
+  "main": "main.js",
+  "author": "VAULT",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "com.vault.gamelibrary",
+    "productName": "VAULT",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "app/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "app/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "app/icon.ico",
+      "uninstallerIcon": "app/icon.ico",
+      "installerHeaderIcon": "app/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "VAULT"
+    }
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  }
+}
