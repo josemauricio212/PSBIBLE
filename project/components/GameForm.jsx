@@ -1,13 +1,13 @@
 // Modal para adicionar ou editar jogo
 function GameForm({ game, onSave, onCancel, onDelete, existingGenres, existingPlatforms, existingSeries }) {
   const isEdit = !!game;
-  const [form, setForm] = useState(game || {
+  const defaults = {
     title: "", series: "", genre: "Ação-Aventura", platform: "PS5",
     year: new Date().getFullYear(), status: "biblioteca", hours: 0, rating: 0,
-    tags: [],
-    pricePaid: 0, priceFull: 0, purchaseYear: new Date().getFullYear(),
+    tags: [], pricePaid: 0, priceFull: 0, purchaseYear: new Date().getFullYear(),
     coverUrl: "", notes: ""
-  });
+  };
+  const [form, setForm] = useState(game ? { ...defaults, ...game } : defaults);
 
   const set = (k, v) => setForm(f => ({...f, [k]: v}));
   const discount = form.priceFull > 0 ? Math.round((1 - form.pricePaid / form.priceFull) * 100) : 0;

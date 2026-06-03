@@ -13,12 +13,14 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
     },
-    icon: path.join(__dirname, 'app', 'icon.png'),
+    icon: path.join(__dirname, 'project', 'icon.png'),
   });
 
-  win.loadFile(path.join(__dirname, 'app', 'index.html'));
+  win.loadFile(path.join(__dirname, 'project', 'VAULT.html'))
+    .catch(err => {
+      console.error('Failed to load app:', err);
+    });
 
-  // Remove default menu bar
   Menu.setApplicationMenu(null);
 }
 

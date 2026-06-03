@@ -212,6 +212,7 @@ function App() {
                 {f.key}: {f.val}
                 <button onClick={() => {
                   if (f.key === "busca") setSearch("");
+                  else if (f.key === "minRating") setFilters(x => ({...x, minRating: 0}));
                   else setFilters(x => ({...x, [f.key]: null}));
                 }}>×</button>
               </span>

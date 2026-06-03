@@ -17,24 +17,28 @@
     },
     "files": [
       "main.js",
-      "app/**/*"
+      "project/**/*"
     ],
     "win": {
       "target": [
         {
-          "target": "zip",
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
           "arch": ["x64"]
         }
       ],
-      "icon": "app/icon.ico",
+      "icon": "project/icon.ico",
       "signAndEditExecutable": false
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "app/icon.ico",
-      "uninstallerIcon": "app/icon.ico",
-      "installerHeaderIcon": "app/icon.ico",
+      "installerIcon": "project/icon.ico",
+      "uninstallerIcon": "project/icon.ico",
+      "installerHeaderIcon": "project/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "VAULT"
